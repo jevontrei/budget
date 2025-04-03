@@ -43,7 +43,7 @@ def get_data(data: str) -> dict:
 
 
 response = get_data(API_type.ACCOUNTS)
-# why does it say type=dict when i used .json()? they look identical to me but i thought they not same
+# why does it say type=dict when i used .json()? they look identical to me but i thought they not same. does the `-> dict` force it?
 print(f"{response}\n{type(response)}")
 
 print()
