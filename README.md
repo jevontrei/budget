@@ -9,3 +9,7 @@ make basic requests to the up api
 3. create types for the up apis
 4. make fn that takes an enum and returns the appropriate data type
 
+# 25.4.4
+
+.ipynb
+.toml
