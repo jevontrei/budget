@@ -32,7 +32,7 @@ def get_data(data: str) -> dict:
 
     try:
         response = requests.get(full_url, headers=headers)
-        response.raise_for_status()  # what is this?
+        response.raise_for_status()  # understand this
         data = response.json()
         return data
     except requests.exceptions.RequestException as e:
@@ -44,9 +44,10 @@ def get_data(data: str) -> dict:
 # response = get_data(API_type.TRANSACTIONS)
 response = get_data(API_type.PING)
 
-# # why do i get type=dict when i used .json()? i know they look identical to me but i thought they not same. does the `-> dict` force it? -> no, they're only type hints. it's  bc .json() is deserialising the response JSON for me
+# # why do i get type=dict when i used .json()?
+# -> it's  bc .json() is deserialising the response JSON for me
 
-if not response:  # this guard clause not work how i thought, i.e. if all `response = get_data()` lines above are commented out
+if not response:  # this guard clause not work how i thought, i.e. when all `response = get_data()` lines above are commented out
     print("No response.")
 else:
     print(f"Retrieved {len(response)} item/s in response...")
@@ -62,15 +63,14 @@ else:
 
 ########################################################
 
-os.system("clear")
-
 
 def edit_tag(transactionId: str, tag: str) -> dict:
     full_url = f"{base_url}/transactions/{transactionId}/relationships/tags"
     print("full url =", full_url)
 
     try:
-        # this is broken
+        # this is broken; error 422; but it works in insomnia
+        # -> something wrong with my args? params=?
         # response = requests.post(url=full_url, headers=headers, data=tag, params=)
         response = requests.patch(url=full_url, headers=headers, data=tag)
         response.raise_for_status()
@@ -101,7 +101,7 @@ else:
 
 print()
 
-# get transaction to check edited tag [edit this to just get the tag]
+# get transaction to check edited tag [make this just get tag]
 r = requests.get(
     f"https://api.up.com.au/api/v1/transactions/{transactionId}", headers=headers)
 print(f"transaction\n{r.content}\n")
