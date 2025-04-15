@@ -18,14 +18,7 @@ os.system("clear")
 api_key = os.environ["API_KEY"]
 headers = {"Authorization": f"Bearer {api_key}"}
 
-# MU:
-# 1. find out what pydantic is
-# data ~validation library
-
-# 2. why might you want to use it
-# to make it easy to pass valid values into a function or other thing
-
-# 3. create types for the up apis
+base_url = os.getenv("API_BASE_URL", "https://api.up.com.au/api/v1")
 
 
 class API_type(Enum):
@@ -33,55 +26,82 @@ class API_type(Enum):
     TRANSACTIONS = "transactions"
     PING = "util/ping"
 
-# 4. make fn that takes an enum and returns the appropriate data type
-
 
 def get_data(data: str) -> dict:
-    base_url = os.getenv("API_BASE_URL", "https://api.up.com.au/api/v1")
     full_url = f"{base_url}/{data.value}"
 
     try:
-        return requests.get(full_url, headers=headers).json()
-    except Exception as e:
-        print(f"Unexpected error: {e}")
+        response = requests.get(full_url, headers=headers)
+        response.raise_for_status()  # what is this?
+        data = response.json()
+        return data
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching data: {e}")
         return None
 
 
-response = get_data(API_type.ACCOUNTS)
+# response = get_data(API_type.ACCOUNTS)
 # response = get_data(API_type.TRANSACTIONS)
-# response = get_data(API_type.PING)
-# why do i get type=dict when i used .json()? they look identical to me but i thought they not same. does the `-> dict` force it?
-if response:
-    print(f"Retrieved {len(response)} item/s")
-    print()
-    for each in response:
-        # print(f"Item ...")
-        print(f"{each}\n{type(each)}")
-        print(f"{response}\n{type(response)}")
-        print("-" * 50)
-else:
+response = get_data(API_type.PING)
+
+# # why do i get type=dict when i used .json()? i know they look identical to me but i thought they not same. does the `-> dict` force it? -> no, they're only type hints. it's  bc .json() is deserialising the response JSON for me
+
+if not response:  # this guard clause not work how i thought, i.e. if all `response = get_data()` lines above are commented out
     print("No response.")
+else:
+    print(f"Retrieved {len(response)} item/s in response...")
+    print("-" * 50)
+    print(response.keys())
+    print("-" * 50)
+    if "data" in response and response["data"]:
+        print(
+            f"Retrieved {len(response['data'])} item/s in response['data']...")
+        for item in response["data"]:
+            print(item)
+            print("-" * 50)
 
-#############################################################
-# MISC REQUESTS TO INTEGRATE
+########################################################
 
-# get a transaction
-# r = requests.get(
-#     "https://api.up.com.au/api/v1/transactions/4ced5c33-1d57-4747-9038-de8fe0367539", headers=headers)
-# print(f"transaction\n{r.content}\n")
+os.system("clear")
 
-# get transactions by category
-# r = requests.get("https://api.up.com.au/api/v1/transactions/?filter[category]=health-and-medical", headers=headers)
-# print(f"health-and-medical transactions\n{r.text}\n")
 
-# get a transaction's category
-# response = requests.get(
-#     "https://api.up.com.au/api/v1/transactions/4ced5c33-1d57-4747-9038-de8fe0367539", headers=headers)
-# this was a pain in the ass to find which json keys to use; surely there's a better way?:
-# print(
-#     response.json()["data"]["attributes"]["amount"]["value"],
-#     response.json()["data"]["relationships"]["category"]["data"]["id"]
-# )
+def edit_tag(transactionId: str, tag: str) -> dict:
+    full_url = f"{base_url}/transactions/{transactionId}/relationships/tags"
+    print("full url =", full_url)
 
-# just snooping:
-# print(response.encoding) # utf-8
+    try:
+        # this is broken
+        # response = requests.post(url=full_url, headers=headers, data=tag, params=)
+        response = requests.patch(url=full_url, headers=headers, data=tag)
+        response.raise_for_status()
+        data = response.json()
+        return data
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching data: {e}")
+        return None
+
+
+transactionId = "207f6db9-888d-4bd9-afd9-73ec3e02c382"
+tag = {
+    "data": [
+        {
+            "type": "tags",
+            "id": "testFromLaptop2"
+        }
+    ]
+}
+
+response = edit_tag(transactionId=transactionId, tag=json.dumps(tag))
+
+if not response:
+    # print("No response.")
+    pass
+else:
+    print(response)
+
+print()
+
+# get transaction to check edited tag [edit this to just get the tag]
+r = requests.get(
+    f"https://api.up.com.au/api/v1/transactions/{transactionId}", headers=headers)
+print(f"transaction\n{r.content}\n")

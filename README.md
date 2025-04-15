@@ -11,5 +11,5 @@ make basic requests to the up api
 
 # 25.4.4
 
-.ipynb
-.toml
+- .ipynb
+- .toml
