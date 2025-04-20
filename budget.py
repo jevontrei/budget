@@ -61,17 +61,11 @@ def main():
                 print()
 
                 if selected_account in range(1, len(accounts) + 1):
-                    # response = get_balance(selected_account)
                     account = accounts["data"][selected_account - 1]
                     print(f"Balance: {account['attributes']['balance']['value']} {account['attributes']['balance']['currencyCode']}")
                 else:
                     print("Sorry, that number doesn't make sense to me.")
                     continue
-
-                # if not response:
-                #     print("No response.")
-                # else:
-                #     print(f"{response}")
 
             case 1:
                 response = get_accounts()
@@ -82,18 +76,23 @@ def main():
                         print(f"\n{account}")
 
             case 10:
-                response = get_an_account()
+                
+                
+                accountId = input("Enter an accountId, or press Enter to use a default: ")
+                accountId = accountId or "32a5fadd-4432-449e-8a30-782648cb2336"
+                print()
+                
+                response = get_an_account(accountId)
                 if not response:
                     print("No response.")
                 else:
                     print(f"{response}")
 
             case 2:
-                transactionId = input("Enter a transactionId, or press Enter to use the default: ")
+                transactionId = input("Enter a transactionId, or press Enter to use a default: ")
                 transactionId = transactionId or "207f6db9-888d-4bd9-afd9-73ec3e02c382"
 
                 response = get_a_transaction(transactionId)
-
                 if not response:
                     print("No response.")
                 else:
