@@ -1,22 +1,21 @@
+#!/usr/bin/env python3
+
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
 #   "requests",
 #   "pydantic",
+#   "dotenv",
 # ]
 # ///
 
 import os
 from datetime import datetime
 import time
-import requests
-import json
-from typing import Any
-from pydantic import BaseModel
-from enum import Enum
 
 from utils import add_tag, get_a_transaction, get_transactions, get_accounts, get_an_account
 # from get_data import get_data
+
 
 os.system("clear")
 
@@ -24,7 +23,6 @@ os.system("clear")
 def main():
     # try:
     while True:
-        print()
         print("-" * 50)
         print("Hi! What do you wanna do?\n")
         print("0. Check spending balance")
@@ -62,7 +60,9 @@ def main():
 
                 if selected_account in range(1, len(accounts) + 1):
                     account = accounts["data"][selected_account - 1]
-                    print(f"Balance: {account['attributes']['balance']['value']} {account['attributes']['balance']['currencyCode']}")
+                    print(
+                        f"Balance: {account['attributes']['balance']['value']} {account['attributes']['balance']['currencyCode']}"
+                    )
                 else:
                     print("Sorry, that number doesn't make sense to me.")
                     continue
@@ -76,12 +76,10 @@ def main():
                         print(f"\n{account}")
 
             case 10:
-                
-                
                 accountId = input("Enter an accountId, or press Enter to use a default: ")
                 accountId = accountId or "32a5fadd-4432-449e-8a30-782648cb2336"
                 print()
-                
+
                 response = get_an_account(accountId)
                 if not response:
                     print("No response.")

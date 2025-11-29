@@ -172,3 +172,8 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+scratch.py
+scratchie.py
+get_data.py
+.DS_Store
+1.py
