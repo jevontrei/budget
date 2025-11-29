@@ -74,13 +74,13 @@ when you are first writing except blocks: how do you know which errors to catch?
 
 - but we never print or log `APIConnectionError` and `APIResponseError`; we just raise them; so they will never appear in the terminal/log. so who are they for? for me, for when i am looking at the code itself?
 
-- **EDIT: ohhh okay,** Claude has informed me how this works. the exceptions you created are subclasses of `Exception`, but they behave independently of `Exception`. just because you defined them with `class APIError(Exception)`, doesn't mean that all exceptions will get sfunnelled into `APIError`... RATHER, you raise `APIError` exactly when you want to, and you catch it yourself. if some other error gets thrown, we will not catch it
+- **EDIT: ohhh okay,** Claude has informed me how this works. the exceptions you created are subclasses of `Exception`, but they behave independently of `Exception`. just because you defined them with `class APIError(Exception)`, doesn't mean that all exceptions will get funnelled into `APIError`... RATHER, you raise `APIError` exactly when you want to, and you catch SPECIFICALLY IT yourself. if some other error gets thrown, we will not catch it
 
 	- you're saying when there's a `Timeout` or `ConnectionError` or `RequestException`, we are naming it an `APIConnectionError` 
 	
 	- and when there's a `HTTPError` or `JSONDecodeError`, we are calling that an `APIResponseError`
 
-- so why use `except APIError as e:` in the fn that calls the fn? is it a way to get all remaining un-caught errors? or does every error in the sub-fn bubble up into this except block? i think not the latter
+- but why use `except APIError as e:` in the fn that calls the fn? we never raised it. is it a way to get all remaining un-caught errors? or does every error in the sub-fn bubble up into this except block? i think not the latter
 
 	- if there's a `Timeout`, we raise an `APIConnectionError`, which bubbles up a level, but why would `except APIError` catch an `APIConnectionError`? i wouldn't expect it to. it seems to contradict my epiphany above, where i thought that we only throw and catch specific errors by their specific names, therefore the class we inherit from is kind of irrelevant in that sense.
 
