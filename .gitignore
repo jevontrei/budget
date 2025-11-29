@@ -172,8 +172,13 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# annoying
+.DS_Store
+
+# scratch / misc
+scratch_misc/
 scratch.py
 scratchie.py
 get_data.py
-.DS_Store
 1.py
